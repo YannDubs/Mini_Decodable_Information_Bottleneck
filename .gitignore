@@ -1,0 +1,16 @@
+# directories
+results
+.vscode
+__MACOSX/
+outputs*
+tensorboard
+
+# Byte-compiled / optimized / DLL files
+*.egg-info
+__pycache__/
+*.py[cod]
+*.egg*
+.DS_Store
+.python-version
+
+

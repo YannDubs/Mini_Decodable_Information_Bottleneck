@@ -1,0 +1,5 @@
+numpy
+hydra-core
+pytorch-lightning
+tensorboard
+pytorch-lightning-bolts
