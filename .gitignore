@@ -4,6 +4,11 @@ results
 __MACOSX/
 outputs*
 tensorboard
+multirun
+pretrained
+wandb
+test
+data
 
 # Byte-compiled / optimized / DLL files
 *.egg-info
@@ -12,5 +17,9 @@ __pycache__/
 *.egg*
 .DS_Store
 .python-version
+
+# Other
+Dockerfile
+*ipynb
 
 

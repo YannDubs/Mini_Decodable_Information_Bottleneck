@@ -1,0 +1,87 @@
+defaults:
+  - hydra/job_logging: colorlog
+  - hydra/hydra_logging: colorlog
+
+seed: 123
+is_load_encoder: false # whether to load the encoder instead of training it 
+alice_modes: ["avg", "worst"] # evaluate on average and worst case
+name: ???
+current_mode: ???
+
+paths:
+  base_dir: ???
+  data: ${paths.base_dir}/data
+  pretrained: ${paths.base_dir}/pretrained/${name}/${current_mode}/beta${loss.beta}/seed${seed}/
+  logs: ${paths.base_dir}/logs/
+  eval: ${paths.base_dir}/results/${name}.csv
+
+data:
+  x_shape: ???
+  n_classes: ???
+  n_train: ???
+  kwargs:
+    data_dir: ${paths.data}
+    seed: ${seed}
+    batch_size: 256
+
+encoder:
+  x_shape: ${data.x_shape}
+  n_classes: ${data.n_classes}
+  z_dim: 1024
+  is_stochastic: True
+  n_test_samples: 12
+  is_contrain_norm: True
+  # by default uses very large encoder because in theory the encoder should not be 
+  # constrained. The regularization should rather come from the encoder's loss (DIB)
+  n_hid_layers: 3
+  dim_hid: 2048 
+
+V: # functional family V of the classifier
+  n_hid_layers: 1
+  dim_hid: 128
+
+loss:
+  beta: 10
+  z_dim: ${encoder.z_dim}
+  inp_min: "Z,Y"
+  n_heads: 5 # log_Y(X) = log10(50000) = 4,69 is how much you should need if V=U
+  n_train: ${data.n_train}
+  n_classes: ${data.n_classes}
+
+optimizer: 
+  lr: 5e-5 # use small lr because don't want implicit regularization
+  # by how much to increase the learning rate for V minimality heads (to make sure that can keep up with the encoder), 
+  # this needs to be increase in case #param_encoder / #param_clf because if encoder has many param it can "change" more with smaller lr
+  lr_factor_Vmin: 50  
+  scheduling_factor: 100 # by how much to reduce lr during training
+
+logger:
+  loggers: ["tensorboard","csv","wandb"]
+  tensorboard:
+    save_dir: ${paths.logs}/tensorboard/${name}/${current_mode}
+    name: beta${loss.beta}_seed${seed}
+  csv:
+    save_dir: ${paths.logs}/csv/${name}/${current_mode}
+    name: beta${loss.beta}_seed${seed}
+  wandb:
+    name: seed${seed}
+    project: dib
+    group: ${name}/${current_mode}/beta${loss.beta}
+    offline: false # Run offline (data can be streamed later to wandb servers).
+
+trainer:
+  #default_root_dir: ${paths.results}
+  max_epochs: 200
+  terminate_on_nan: true
+  progress_bar_refresh_rate: 0 # increase to show progress bar
+  
+  # ENGINEERING / SPEED
+  gpus: 1 
+  num_nodes: 1 
+  precision: 16 # use 16 bit for speed
+
+  # DEBUGGING
+  fast_dev_run: false # use true to make a quick test (not full epoch)
+  track_grad_norm: -1 # use 2 to track L2 norms of grad
+  overfit_batches: 0.0 # use 0.01 to make sure you can overfit 1% of training data => training works
+  weights_summary: top # full to print show the entire model 
