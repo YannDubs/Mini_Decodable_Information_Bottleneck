@@ -42,11 +42,11 @@ def mean(l):
 class MLP(nn.Module):
     """Multi Layer Perceptron."""
 
-    def __init__(self, dim_in, dim_out, n_hid_layers=2, dim_hid=128):
+    def __init__(self, dim_in, dim_out, n_hid_layers=1, dim_hid=128):
         super().__init__()
         # Leaky relu can help if deep
         layers = [nn.Linear(dim_in, dim_hid), nn.LeakyReLU()]
-        for _ in range(n_hid_layers):
+        for _ in range(1, n_hid_layers):
             layers += [nn.Linear(dim_hid, dim_hid), nn.LeakyReLU()]
         layers += [nn.Linear(dim_hid, dim_out)]
         self.module = nn.Sequential(*layers)
