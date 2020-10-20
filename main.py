@@ -7,7 +7,6 @@ import hydra
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import TensorBoardLogger, CSVLogger, WandbLogger
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 
 from dib import DIBWrapper, DIBLoss
@@ -174,9 +173,12 @@ def get_trainer(cfg):
     if "csv" in cfg.logger.loggers:
         loggers.append(CSVLogger(**cfg.logger.csv))
 
-    # Dev !!
     if "wandb" in cfg.logger.loggers:
-        loggers.append(WandbLogger(**cfg.logger.wandb))
+        try:
+            loggers.append(WandbLogger(**cfg.logger.wandb))
+        except Exception:
+            cfg.logger.wandb.offline = True
+            loggers.append(WandbLogger(**cfg.logger.wandb))
 
     trainer = pl.Trainer(
         logger=loggers,
