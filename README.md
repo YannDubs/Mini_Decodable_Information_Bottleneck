@@ -1,8 +1,10 @@
 # Mini Decodable Information Bottleneck [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/YannDubs/Neural-Process-Family/blob/master/LICENSE) [![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
-This is a minimal repository for the paper [Learning Optimal Representations with the Decodable Information Bottleneck](https://arxiv.org/abs/2009.12789). The repository focuses on **practicality and simplicity**, as such there are some [differences](#differences-with-original-paper) with the original paper. For the full (and long) code see [Facebook's repository](facebookresearch/decodable_information_bottleneck).
+Note Bene: Still under construction!
 
-The Decodable Information Bottleneck (DIB) is an algorithm to appproximate optimal representations, i.e.,  $\mathcal{V}$-minimal $\mathcal{V}$-sufficient representations. DIB is a generalization of the information bottleneck, which is simpler to estimate and provably optimal because it incorporate the classifier's architecture of interest $\V$ (e.g. linear classifier, 3 layer MLP).
+This is a minimal repository for the paper [Learning Optimal Representations with the Decodable Information Bottleneck](https://arxiv.org/abs/2009.12789). The repository focuses on **practicality and simplicity**, as such there are some [differences](#differences-with-original-paper) with the original paper. For the full (and long) code see [Facebook's repository](github.com/facebookresearch/decodable_information_bottleneck).
+
+The Decodable Information Bottleneck (DIB) is an algorithm to appproximate optimal representations, i.e.,  V-minimal V-sufficient representations. DIB is a generalization of the information bottleneck, which is simpler to estimate and provably optimal because it incorporate the classifier's architecture of interest V (e.g. linear classifier, 3 layer MLP).
 
 ## Install
 
@@ -10,35 +12,35 @@ The Decodable Information Bottleneck (DIB) is an algorithm to appproximate optim
 1. Install [PyTorch](https://pytorch.org/)
 2. `pip install -r requirements.txt`
 
-## Use DIB in Your Work
+Nota Bene: if you prefer I also provide a `Dockerfile` to install the necessary packages.
+
+## Using DIB in Your Work
 If you want to use DIB in your work, you should focus on `dib.py`. This module contains the loss `DIBLoss`, a wrapper around your encoder / model `DIBWrapper`, and a wrapper around your dataset `get_DIB_data` to add the index to the target. The wrapper can be used both in a single player game setting (i.e. to use DIB as a regularizer) or in a 2 player game setting (i.e. to pretrain an encoder using DIB). All you need is something like that:
 
 ```python
 from dib import DIBWrapper, DIBLoss, get_DIB_data
 
-V = SmallMLP
-model = DIBWrapper(Encoder=LargeMLP, # architecture of the encoder
-                   V=V # architecture of the classifier
-                   )
+V = SmallMLP # architecture of the classifier
+model = DIBWrapper(V=V, Encoder=LargeMLP) # architecture of the encoder
 
 loss = DIBLoss(V=V, n_train=50000) # needs to know training size
 train(model,loss, get_DIB_data(CIFAR10))
 
-# --- CASE 1: USING DIB AS A REGULARIZER ---
-# the model now contains both an encoder and classifier that were jointly trained
-# this corresponds to the single player game scenario (i.e. using DIB as a regularizer) 
+# ------------------ CASE 1: USING DIB AS A REGULARIZER -------------------
+# the model contains the encoder and classifier trained jointly 
+# this corresponds to the single player game scenario 
 predict(model)
-# ------------------------------------------
+# -------------------------------------------------------------------------
 
-# --- CASE 2: USING DIB FOR REPRESENTATION LEARNING ---
+# ------------- CASE 2: USING DIB FOR REPRESENTATION LEARNING -------------
 # the following code freezes the representation and resets the classifier. 
 # This corresponds to the 2 player game scenario
 model.set_2nd_player_()
-# the second player consists of a usual deep learner => no more DIB (encoder is pretrained)
+# 2nd player is a usual deep learner => no more DIB (encoder is pretrained)
 train(model,torch.nn.CrossEntropy(), CIFAR10)
-# the model now contains the encoder trained with DIB and a classifier trained disjointly
+# the model contains the DIB encoder and classifier trained disjointly
 predict(model)
-# ----------------------------------------------------
+# -------------------------------------------------------------------------
 ```
 
 The rest of the repository:

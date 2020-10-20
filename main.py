@@ -88,6 +88,7 @@ class DIBBob(pl.LightningModule):
             self.log("z_std", self.model.z_std)
 
         self.log("train_loss", loss)
+        self.log("train_acc", self.accuracy(out[0], targets[0]))
         return loss
 
     def evaluate(self, batch, _):
@@ -146,6 +147,7 @@ class DIBAlice(DIBBob):
         y_pred, _ = self(X)
         loss = self.loss(y_pred, targets)
         self.log("train_loss", loss)
+        self.log("train_acc", self.accuracy(y_pred, targets[0]))
         return loss
 
 

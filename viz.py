@@ -17,7 +17,7 @@ def plot_results(name):
 
     # all the test log loss
     test_df = pd.read_csv(f"results/{name}.csv").drop("acc", axis=1)
-    test_df.rename(columns={"loss": "value"}, inplace=True)
+    test_df["Log Like."] = -test_df["loss"]
     test_df["loss"] = "test"
 
     # all the train losses
@@ -40,7 +40,7 @@ def plot_results(name):
         )
         train_df["beta"] = float(f.split("beta")[-1].split("_")[0])
         train_df["seed"] = int(f.split("seed")[-1].split("/")[0])
-        train_df.rename(columns={"train_loss": "value"}, inplace=True)
+        train_df["Log Like."] = -train_df["train_loss"]
         train_df["loss"] = "train"
 
         # only average last epoch
@@ -55,7 +55,7 @@ def plot_results(name):
     sns_plot = sns.relplot(
         data=df,
         x="beta",
-        y="value",
+        y="Log Like.",
         hue="loss",
         facet_kws={"sharey": False},
         kind="line",

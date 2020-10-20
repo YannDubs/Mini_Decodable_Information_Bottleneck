@@ -162,14 +162,19 @@ class CrossEntropyLossGeneralize(nn.CrossEntropyLoss):
         the model could end up only focusing on maximizing the test loss to infinity regardless of
         train.
 
+    is_forward_test : bool, optional
+        Whether the forward pass should contain the loss from the test set or only from train.
+        Useful for plotting, in case you only want to plot the training.
+
     kwargs :
         Additional arguments to `torch.nn.CrossEntropyLoss`.
     """
 
-    def __init__(self, gamma=-0.1, cap_test_loss=10, **kwargs):
+    def __init__(self, gamma=-0.1, cap_test_loss=10, is_forward_test=False, **kwargs):
         super().__init__(reduction="none", **kwargs)
         self.gamma = gamma
         self.cap_test_loss = cap_test_loss
+        self.is_forward_test = is_forward_test
 
     def forward(self, inp, targets):
         label, is_train = targets
@@ -187,7 +192,14 @@ class CrossEntropyLossGeneralize(nn.CrossEntropyLoss):
         to_cap = is_large_loss & is_test
         out[to_cap] = out[to_cap] * 0 + out[to_cap].detach()
 
-        return (weights * out).mean()
+        out = weights * out
+
+        if not self.is_forward_test:
+            # set to 0 but still backprop
+            out[is_test] = out[is_test] - out[is_test].detach()
+            return out.sum() / is_train.sum()
+        else:
+            return out.mean()
 
 
 def get_exponential_decay_gamma(scheduling_factor, max_epochs):
