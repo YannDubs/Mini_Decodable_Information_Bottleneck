@@ -1,4 +1,3 @@
-from glob import glob
 import os
 
 import math
@@ -13,6 +12,14 @@ import operator
 
 
 from torch.autograd import Function
+
+
+def create_folders(base_path, names):
+    """Safely creates a list of floders ar a certain path."""
+    for name in names:
+        path = os.path.join(base_path, names)
+        if not os.path.exists(path):
+            os.makedirs(path)
 
 
 def freeze_(module):

@@ -11,7 +11,13 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from dib import DIBWrapper, DIBLoss
-from utils import prod, MLP, CrossEntropyLossGeneralize, get_exponential_decay_gamma
+from utils import (
+    prod,
+    MLP,
+    CrossEntropyLossGeneralize,
+    get_exponential_decay_gamma,
+    create_folders,
+)
 from data import MyCIFAR10DataModule
 
 logger = logging.getLogger(__name__)
@@ -22,6 +28,7 @@ def main(cfg):
 
     pl.seed_everything(cfg.seed)
     cfg.paths.base_dir = hydra.utils.get_original_cwd()
+    create_folders(cfg.paths.base_dir, ["results", "logs", "pretrained"])
 
     # 1 PLAYER GAME SETTING (BOB)
     cfg.current_mode = "1player"
