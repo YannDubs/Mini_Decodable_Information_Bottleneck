@@ -2,7 +2,7 @@
 
 Note Bene: Still under construction!
 
-This is a minimal repository for the paper [Learning Optimal Representations with the Decodable Information Bottleneck](https://arxiv.org/abs/2009.12789). The repository focuses on **practicality and simplicity**, as such there are some [differences](#differences-with-original-paper) with the original paper. For the full (and long) code see [Facebook's repository](github.com/facebookresearch/decodable_information_bottleneck).
+This is a minimal repository for the paper [Learning Optimal Representations with the Decodable Information Bottleneck](https://arxiv.org/abs/2009.12789). The repository focuses on **practicality and simplicity**, as such there are some [differences](#differences-with-original-paper) with the original paper. For the full (and long) code see [Facebook's repository](https://github.com/facebookresearch/decodable_information_bottleneck).
 
 The Decodable Information Bottleneck (DIB) is an algorithm to appproximate optimal representations, i.e.,  V-minimal V-sufficient representations. DIB is a generalization of the information bottleneck, which is simpler to estimate and provably optimal because it incorporate the classifier's architecture of interest V (e.g. linear classifier, 3 layer MLP).
 
