@@ -19,7 +19,6 @@ __pycache__/
 .python-version
 
 # Other
-Dockerfile
 *ipynb
 
 
